@@ -1,14 +1,13 @@
-language: generic
+language: ruby
 os: osx
 before_install:
   - ruby --version
+  - gem --version
   - python --version
   - brew update
   - brew --version
-env:
-  - HEAD=
-  - HEAD=--HEAD
 script:
-  - brew audit --strict --online Formula/dmgbuild.rb
-  - brew install --verbose $HEAD Formula/dmgbuild.rb
-  - brew test --no-sandbox --verbose Formula/dmgbuild.rb
+  - bundle exec thor test:all
+env:
+  - DMGBUILD_VERSION=stable
+  - DMGBUILD_VERSION=head

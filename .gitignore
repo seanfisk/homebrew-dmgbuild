@@ -1,0 +1,6 @@
+# Bundler
+/.bundle/
+/bin/
+
+# Python
+.python-version
