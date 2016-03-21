@@ -1,8 +1,6 @@
 language: ruby
 os: osx
 before_install:
-  - ruby --version
-  - gem --version
   - python --version
   - brew update
   - brew --version
