@@ -1,0 +1,11 @@
+language: generic
+os: osx
+before_install:
+  - ruby --version
+  - python --version
+  - brew update
+  - brew --version
+script:
+  - brew audit --strict --online Formula/dmgbuild.rb
+  - brew install --verbose Formula/dmgbuild.rb
+  - brew test --no-sandbox --verbose Formula/dmgbuild.rb
