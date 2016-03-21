@@ -5,7 +5,10 @@ before_install:
   - python --version
   - brew update
   - brew --version
+env:
+  - HEAD=
+  - HEAD=--HEAD
 script:
   - brew audit --strict --online Formula/dmgbuild.rb
-  - brew install --verbose Formula/dmgbuild.rb
+  - brew install --verbose $HEAD Formula/dmgbuild.rb
   - brew test --no-sandbox --verbose Formula/dmgbuild.rb
