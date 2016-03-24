@@ -77,7 +77,7 @@ class Test < Thor
   desc 'ci', 'Run tests for continuous integration'
   def ci
     # TODO: Add travis back in here once 'travis lint' recognizes the
-    # 'osx_image' key.
+    # 'osx_image' key. See https://github.com/travis-ci/travis-yaml/issues/86
     #
     # Note: audit is already run by 'brew test-bot', so it's not necessary to
     # run it here.
