@@ -29,6 +29,15 @@ class Test < Thor
 
   FORMULA_PATH = 'Formula/dmgbuild.rb'.freeze
 
+  desc 'rubocop', 'Run rubocop on all Ruby files'
+  def rubocop(exit = true)
+    # Don't check the formula; this is done by Homebrew in the audit.
+    result = RuboCop::CLI.new.run %W(Gemfile #{__FILE__})
+    puts 'No rubocop errors'.colorize(:green) if result == 0
+    exit result if exit
+    result
+  end
+
   desc 'audit', "Run 'brew audit' on the formula"
   def audit(exit = true)
     proc = run_subprocess %W(brew audit --strict --online #{FORMULA_PATH})
@@ -48,15 +57,6 @@ class Test < Thor
     proc.exitstatus
   end
 
-  desc 'rubocop', 'Run rubocop on all Ruby files'
-  def rubocop(exit = true)
-    # Don't check the formula; this is done by Homebrew in the audit.
-    result = RuboCop::CLI.new.run %W(Gemfile #{__FILE__})
-    puts 'No rubocop errors'.colorize(:green) if result == 0
-    exit result if exit
-    result
-  end
-
   desc 'travis', "Run 'travis lint' on '.travis.yml'"
   def travis(exit = true)
     puts 'Linting travis file'
@@ -74,14 +74,16 @@ class Test < Thor
     retval
   end
 
-  desc 'noinstall', 'Run all tests sans the install test'
-  def noinstall
-    run_tests %w(audit rubocop travis)
+  desc 'ci', 'Run tests for continuous integration'
+  def ci
+    # TODO: Add travis back in here once 'travis lint' recognizes the
+    # 'osx_image' key.
+    run_tests %w(rubocop)
   end
 
-  desc 'all', 'Run all'
+  desc 'all', 'Run all tests'
   def all
-    run_tests %w(audit rubocop travis install)
+    run_tests %w(rubocop audit install travis)
   end
 
   private

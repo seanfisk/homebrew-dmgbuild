@@ -1,11 +1,64 @@
+# Based on:
+# - https://github.com/Homebrew/homebrew-tex/blob/master/.travis.yml
+# - https://github.com/Homebrew/homebrew-emacs/blob/master/.travis.yml
+# - https://github.com/Homebrew/homebrew-php/blob/master/.travis.yml
+# - https://github.com/Homebrew/homebrew-science/blob/master/.travis.yml
+#
+# Also see this for OS X images:
+# https://docs.travis-ci.com/user/languages/objective-c
+
 language: ruby
-os: osx
+matrix:
+  include:
+    # We've used the latest Xcode possible which uses each OS.
+    #
+    # We use the latest^ Ruby and not system because our Ruby code
+    # doesn't interact with Homebrew's Ruby code.
+    #
+    # ^ Ruby 2.3.0 is failing on OS X images:
+    # https://github.com/travis-ci/travis-ci/issues/5361
+    #
+    # Travis' YAML parsing doesn't support references :(
+    - env: OSX=10.11
+      os: osx
+      osx_image: xcode7.3
+      rvm: 2.2.0
+    - env: OSX=10.10
+      os: osx
+      osx_image: xcode7.1
+      rvm: 2.2.0
+    - env: OSX=10.9
+      os: osx
+      osx_image: beta-xcode6.2
+      rvm: 2.2.0
 before_install:
   - python --version
-  - brew update
-  - brew --version
+  # Make sure Homebrew is set up correctly
+  - if [ -f '.git/shallow' ]; then travis_retry git fetch --unshallow; fi
+  - BREW_REPO="$(brew --repo)"
+  - sudo chown -R "$USER" "$BREW_REPO"
+  - git -C "$BREW_REPO" reset --hard origin/master
+  - git -C "$BREW_REPO" clean -qxdff
+  - brew update || brew update
+  # "Install" the tap by symlinking it into the Taps directory
+  - TAP_PARENT_DIR="$BREW_REPO/Library/Taps/seanfisk"
+  - mkdir -p "$TAP_PARENT_DIR"
+  - TAP_DIR="$TAP_PARENT_DIR/homebrew-dmgbuild"
+  - ln -s "$PWD" "$TAP_DIR"
+  - cd "$TAP_DIR"
+  - export TRAVIS_BUILD_DIR="$TAP_DIR"
+  # Print Travis variables for debugging
+  - env | grep '^TRAVIS_'
 script:
-  - bundle exec thor test:all
-env:
-  - DMGBUILD_VERSION=stable
-  - DMGBUILD_VERSION=head
+  # Travis sets BUNDLE_GEMFILE for Ruby builds when a Gemfile exists
+  # in the build directory, which causes the Bundler process to use
+  # the Gemfile specified in that variable when --gemfile isn't
+  # specified. Homebrew has its own Gemfile but doesn't specify
+  # --gemfile, so we need to unset this environment variable for 'brew
+  # tests' (run as part of 'brew test-bot') for Homebrew to install
+  # its dependencies correctly.
+  #
+  # Run Homebrew's tests.
+  - BUNDLE_GEMFILE= brew test-bot
+  # Run our own tests.
+  - bundle exec thor test:ci
