@@ -78,7 +78,10 @@ class Test < Thor
   def ci
     # TODO: Add travis back in here once 'travis lint' recognizes the
     # 'osx_image' key.
-    run_tests %w(rubocop)
+    #
+    # Note: audit is already run by 'brew test-bot', so it's not necessary to
+    # run it here.
+    run_tests %w(rubocop install)
   end
 
   desc 'all', 'Run all tests'

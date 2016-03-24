@@ -58,7 +58,16 @@ script:
   # tests' (run as part of 'brew test-bot') for Homebrew to install
   # its dependencies correctly.
   #
-  # Run Homebrew's tests.
+  # Run Homebrew's tests. 'brew test-bot' will only run 'brew install
+  # dmgbuild' and 'brew test dmgbuild' if '--fast' is NOT passed, our
+  # formula is bottled, or bottles are disabled for our formula [?]
+  # [see 'Library/Homebrew/cmd/test-bot.rb']. We want to run 'brew
+  # test dmgbuild' on our formula, but '--fast' is activated by virtue
+  # of being run on Travis, and it's programmed in such a way that is
+  # hard to override. This is just as well, I guess, because the
+  # formula's test fail in the sandbox, which seems difficult to
+  # disable through test-bot. We'll just install and test the formula
+  # through our own tests.
   - BUNDLE_GEMFILE= brew test-bot
   # Run our own tests.
   - bundle exec thor test:ci
