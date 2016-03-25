@@ -5,7 +5,7 @@ dmgbuild Homebrew Tap
 
 [![Build Status](https://travis-ci.org/seanfisk/homebrew-dmgbuild.svg?branch=master)](https://travis-ci.org/seanfisk/homebrew-dmgbuild)
 
-This is a [Homebrew][] [tap][] for [dmgbuild][].
+This is a [Homebrew][] [tap][] for [dmgbuild][], a tool for automating the creation of OS X disk images.
 
 [Homebrew]: http://brew.sh/
 [tap]: https://github.com/Homebrew/homebrew/blob/master/share/doc/homebrew/brew-tap.md
