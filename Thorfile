@@ -11,7 +11,6 @@ require 'shellwords'
 
 # Helper module for safely executing subprocesses.
 module Subprocess
-  # Mixlib::ShellOut doesn't support arrays on Windows... Ugh.
   def run_subprocess(cmd)
     # See `bundle help exec' for more info on using a 'clean' environment.
     Bundler.with_clean_env do
@@ -33,7 +32,7 @@ class Test < Thor
   def rubocop(exit = true)
     # Don't check the formula; this is done by Homebrew in the audit.
     result = RuboCop::CLI.new.run %W(Gemfile #{__FILE__})
-    puts 'No rubocop errors'.colorize(:green) if result == 0
+    puts 'No rubocop errors'.colorize(:green) if result.zero?
     exit result if exit
     result
   end
@@ -48,8 +47,8 @@ class Test < Thor
   desc 'install', 'Install dmgbuild, then test the formula'
   def install(exit = true)
     install_args = %w(brew install --verbose)
-    install_args.push '--HEAD' if ENV['DMGBUILD_VERSION'] == 'HEAD'
-    install_args.push FORMULA_PATH
+    install_args << '--HEAD' if ENV['DMGBUILD_VERSION'] == 'HEAD'
+    install_args << FORMULA_PATH
     proc = run_subprocess install_args
     proc.error!
     proc = run_subprocess %W(brew test --no-sandbox --verbose #{FORMULA_PATH})
@@ -78,10 +77,7 @@ class Test < Thor
   def ci
     # TODO: Add travis back in here once 'travis lint' recognizes the
     # 'osx_image' key. See https://github.com/travis-ci/travis-yaml/issues/86
-    #
-    # Note: audit is already run by 'brew test-bot', so it's not necessary to
-    # run it here.
-    run_tests %w(rubocop install)
+    run_tests %w(rubocop audit install)
   end
 
   desc 'all', 'Run all tests'
@@ -93,19 +89,10 @@ class Test < Thor
 
   def run_tests(tasks)
     # Pass false as an argument to prevent the task from exiting.
-    sum = tasks.collect { |task| invoke('test:' + task, [false]) }.reduce(:+)
-    if sum == 0
-      print_msg 'PASS', :green
-    else
-      print_msg 'FAIL', :red
-    end
-    # Exit with the sum of the error codes.
-    exit sum
-  end
-
-  def print_msg(msg, color)
+    sum = tasks.map { |task| invoke('test:' + task, [false]) }.reduce(:+)
+    message, color = sum.zero? ? ['PASS', :green] : ['FAIL', :red]
     artii = Artii::Base.new font: 'block'
     # artii adds two blank lines after the block text; we just want one.
-    print artii.asciify(msg).lines[0..-2].join.colorize(color)
+    puts Rainbow(artii.asciify(message).rstrip + "\n").color(color)
   end
 end
