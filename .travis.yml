@@ -28,7 +28,7 @@ matrix:
       os: osx
       osx_image: xcode6.4
       rvm: 2.2.0
-  allowed_failures:
+  allow_failures:
     # Failing on Git checkout issues and SSL problems right now
     - env: OSX=10.10
       os: osx
