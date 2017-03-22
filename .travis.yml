@@ -42,4 +42,4 @@ script:
   # succeed (it uses a path to a device that is not included in the
   # sandbox). We are now just running the minimum amount of commands
   # necessary to test *this* formula.
-  - bundle exec thor test:ci
+  - bundle exec thor  test:ci
