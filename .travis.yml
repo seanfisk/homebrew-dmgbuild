@@ -1,5 +1,4 @@
-# Based on:
-# https://github.com/Homebrew/homebrew-emacs/blob/master/.travis.yml
+# Based on: https://github.com/Homebrew/homebrew-emacs/blob/master/.travis.yml
 #
 # Also see this for OS X images:
 # https://docs.travis-ci.com/user/languages/objective-c
@@ -24,23 +23,15 @@ matrix:
       os: osx
       osx_image: xcode8
       rvm: 2.2.0
-    - env: OSX=10.10
-      os: osx
-      osx_image: xcode6.4
-      rvm: 2.2.0
-  allow_failures:
-    # Failing on Git checkout issues and SSL problems right now
-    - env: OSX=10.10
-      os: osx
-      osx_image: xcode6.4
-      rvm: 2.2.0
+    # Erroring on Git checkout issues right now
+    # - env: OSX=10.10
+    #   os: osx
+    #   osx_image: xcode6.4
+    #   rvm: 2.2.0
 before_install:
   - python --version
   # Make sure Homebrew is up-to-date
   - brew update || brew update
-  # Try to get around SSL errors
-  - gem update --system
-  - gem --version
 script:
   # In the past, we've attempted to use brew test-bot to test our
   # formula. However, there seems no easy way to run the tests outside
